@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Billiard Match Scheduler</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 20px;
+        }
+
+        .match {
+            margin: 10px;
+            padding: 10px;
+            border: 1px solid black;
+            display: inline-block;
+            width: 80%;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        input,
+        select {
+            padding: 10px;
+            font-size: 16px;
+            margin: 10px;
+        }
+
+        .player-inputs {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Billiard Match Scheduler</h1>
+
+    <!-- Input untuk nama pemain -->
+    <div class="player-inputs">
+        <label for="playerNames">Enter player names (comma separated):</label>
+        <input type="text" id="playerNames" placeholder="e.g. Tobi, Kevin, Bayu, X">
+    </div>
+
+    <!-- Dropdown untuk memilih jumlah pemain -->
+    <label for="playerCount">Choose Number of Players:</label>
+    <select id="playerCount">
+        <option value="3">3 Players</option>
+        <option value="4">4 Players</option>
+    </select>
+
+    <!-- Tombol untuk memulai jadwal -->
+    <button onclick="startGame()">Start Game</button>
+
+    <div id="matches"></div>
+
+    <!-- Tombol untuk melanjutkan ronde berikutnya -->
+    <button onclick="nextRound()">Next Round</button>
+
+    <script>
+        let players = [];
+        let schedule = [];
+        let currentRound = 0;
+
+        function startGame() {
+            // Ambil input nama pemain dan validasi
+            const playerNamesInput = document.getElementById("playerNames").value;
+            const playerNames = playerNamesInput.split(',').map(name => name.trim()).filter(name => name !== "");
+
+            if (playerNames.length < 3 || playerNames.length > 4) {
+                alert("Please enter between 3 and 4 players.");
+                return;
+            }
+
+            // Menentukan jumlah pemain yang dipilih
+            const playerCount = document.getElementById("playerCount").value;
+            if (playerCount === "3" && playerNames.length === 3) {
+                players = playerNames;
+                schedule = [
+                    [players[0], players[1]],
+                    [players[1], players[2]],
+                    [players[2], players[0]]
+                ];
+            } else if (playerCount === "4" && playerNames.length === 4) {
+                players = playerNames;
+                schedule = [
+                    [players[0], players[1]],
+                    [players[2], players[3]],
+                    [players[0], players[2]],
+                    [players[1], players[3]],
+                    [players[0], players[3]],
+                    [players[1], players[2]]
+                ];
+            } else {
+                alert("The number of players does not match the selected mode.");
+                return;
+            }
+
+            currentRound = 0; // Reset round to 0
+            nextRound(); // Menampilkan ronde pertama
+        }
+
+        function nextRound() {
+            const matchContainer = document.getElementById("matches");
+
+            if (schedule.length === 0) {
+                matchContainer.innerHTML = "No matches scheduled.";
+                return;
+            }
+
+            // Tampilkan pertandingan ronde saat ini
+            const match = schedule[currentRound];
+            matchContainer.innerHTML = `<div class="match"><strong>Round ${currentRound + 1}</strong>: ${match[0]} vs ${match[1]}</div>`;
+
+            // Perbarui ronde
+            currentRound = (currentRound + 1) % schedule.length;
+        }
+    </script>
+</body>
+
+</html>
